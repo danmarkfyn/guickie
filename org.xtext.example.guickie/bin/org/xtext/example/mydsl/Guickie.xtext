@@ -1,0 +1,94 @@
+grammar org.xtext.example.mydsl.Guickie with org.eclipse.xtext.common.Terminals
+
+generate guickie "http://www.xtext.org/example/mydsl/Guickie"
+/* (CHEAT SHEET)
+ * https://www.eclipse.org/Xtext/documentation/301_grammarlanguage.html
+ * ? 0 eller 1
+ * Ingenting = 1
+ * * 0 til mange
+ * + 1 til mange
+ * [] ref til en implementation instead of a rule
+ */
+
+
+GUI:
+	{GUI}
+	(('Title' | 'title') ':'? title = STRING (CLOSE))?
+	(('style:'|'style'|'style=') style=(Style)(CLOSE))?
+	containers+=Container+
+	(CLOSE)
+;
+
+Container:
+	{Container}('Container' | 'container') name=ID ('alignment'':'? align=(Vertical | Horizontal)?)
+	START
+		elements+=Element+
+	END
+;
+
+Horizontal:
+	{Horizontal}("h" | "horizontal")
+;
+
+Vertical:
+	{Vertical}("v" | "vertical")
+;
+
+Style:
+	type=(Neon | Grey)
+;
+
+
+Neon:
+	{Neon}('neon' | 'funky')
+;
+
+
+Grey:
+	{Grey}('grey' | 'bland')
+;
+
+Element:
+	{Element}
+	'element'(':'|"=")? name = ID 
+	('of type'|'type'(':'|"=")?) type=(Button | Label | TextField | HyperLink)
+	(('link to' | 'link' | '->') link = [Element | QualifiedName])?
+;
+
+QualifiedName: ID ('.' ID)* ;
+
+
+Button:
+	{Button}('btn' | 'button')
+;
+
+Label:
+	{Label}('lbl' | 'label')
+	
+;
+
+TextField:
+	{TextField}('tf' | 'textfield')
+;
+
+HyperLink:
+	{HyperLink}('hyperlink' | 'webpage')
+;
+
+
+
+
+// Defining the rule for weblinks by using Rule Calls
+
+
+terminal CLOSE:
+	('\n')+|(';')
+;
+
+
+terminal START:
+	'('
+;
+terminal END:
+	')'
+;
